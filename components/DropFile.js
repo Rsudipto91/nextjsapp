@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import FilePreview from "./FilePreview.js";
+import AlertSnackbar from "./SnackBar.js";
 
 const DropFile = ({ data, dispatch }) => {
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
     const handleDragEnter = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -46,8 +49,12 @@ const DropFile = ({ data, dispatch }) => {
 
     //To Handle API call
     const uploadFiles = async () => {
-        let length = data.fileList.length;
-        alert(`${length} files to be uploaded`);
+        setOpenSnackbar(true);
+    };
+
+    const handleSnackbarClose = (e, reason) => {
+        if (reason === "clickaway") return;
+        setOpenSnackbar(false);
     };
 
     return (
@@ -70,9 +77,18 @@ const DropFile = ({ data, dispatch }) => {
             </div>
             <FilePreview fileData={data} />
             {data.fileList.length > 0 && (
-                <button className='uploadBtn' onClick={uploadFiles}>
-                    Upload
-                </button>
+                <>
+                    <button className='uploadBtn' onClick={uploadFiles}>
+                        Upload
+                    </button>
+                    <AlertSnackbar
+                        message='File Uploaded'
+                        open={openSnackbar}
+                        autoHideDuration={6000}
+                        handleClose={handleSnackbarClose}
+                        severity='success' //error, warning, info
+                    />
+                </>
             )}
         </>
     );
